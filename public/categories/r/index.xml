@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R on STA304 Assignment</title>
+    <link>/categories/r/</link>
+    <description>Recent content in R on STA304 Assignment</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 23 Jul 2015 21:13:14 -0500</lastBuildDate><atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What is The Linear Regression Relationship Between How The Canadian Voters Feel About Canada and Their Age</title>
+      <link>/2015/07/23/what-is-the-linear-regression-relationship-between-how-the-canadian-voters-feel-about-canada-and-their-age/</link>
+      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      
+      <guid>/2015/07/23/what-is-the-linear-regression-relationship-between-how-the-canadian-voters-feel-about-canada-and-their-age/</guid>
+      <description>We use (R Core Team 2020) and R package (Wickham et al. 2019) to do the analysis.
+Code and data supporting this analysis is available at: “https://github.com/Lily-WangQian/STA304_PS1.git”.
+Abstract: “We investigated the data set of the Canadian Election Study online survey in 2019. The results showed us that Canadians who are older have a better impression of the native country, Canada. This is because older people tend to be more mature and know the meaning of their identity is important.</description>
+    </item>
+    
+  </channel>
+</rss>

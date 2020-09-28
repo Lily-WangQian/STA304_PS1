@@ -1,0 +1,248 @@
+---
+title: "What is The Linear Regression Relationship Between How The Canadian Voters Feel About Canada and Their Age"
+author: "Qian(Lily) Wang"
+date: 2015-07-23T21:13:14-05:00
+categories: ["R"]
+bibliography: "references.bib"
+tags: ["R Markdown", "plot", "regression"]
+---
+
+We use [@citeR] and `R` package [@citetidyverse] to do the analysis.
+
+Code and data supporting this analysis is available at: "https://github.com/Lily-WangQian/STA304_PS1.git".
+
+# Abstract:
+
+"We investigated the data set of the Canadian Election Study online survey in 2019. The results showed us that Canadians who are older have a better impression of the native country, Canada. This is because older people tend to be more mature and know the meaning of their identity is important. These results are significant since the younger generation tends to lack of patriotism."
+
+```{r setup, include=FALSE, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# options(scipen=999)
+# install.packages("dplyr")
+# install.packages("tidyverse")
+# install.packages("skimr")
+# install.packages("devtools")
+# install.packages("visdat")
+# devtools::install_github("hodgettsp/cesR")
+library(tidyverse)
+library(visdat)
+library(cesR)
+library(skimr)
+library(knitr)
+library(dplyr)
+```
+
+# Introduction
+
+The young generation is far less patriotic and less likely to think of themselves as Canadians compare to their parents[@carlson_2012]. A new national survey investigates the Canadian attitudes towards patriotism. The result is that there is a significant difference between youngsters and elders who are more patriotic. The Association for Canadian Studies commission a pull and showed that there is a 30 percentage point gap between the youngsters and 90% of the Canadian elders who think themselves are patriotic[@carp_2009]。
+
+In our study, we analyzed a subset of the online survey version of the 2019 CES dataset which is part of the 2019 Canadian Elections Survey. We looked at core variables age and gender the percentage of how Canadian feel about their country. We discovered that Canadian who are elders tend to be more patriotic than youngsters. There could be a lack of identity. This could be that there is a lack of national identification in Canada.
+
+We examined age and the feeling of the national country among the Canadians in this online CES survey and found out that elders are more fond of their national identity, on the other hand, the youngsters are less patriotic. However, we did not consider other factors that might bring impact this finding, There are only a few people who fill the blanks of how they feel about their national country. The distribution of the impression of a national country is extremely left-skewed. Some factors like the internet speed and how the online CES survey propagates could potentially affect the model results. Since this is a survey about politics, the people who take the survey and be more interested in this survey could be elders. Future work would be the focus on what extend people care about politics and how they affect the relationship between patriotism and age.
+
+# Data discussion
+
+The 2019 Canadian Election Study - Online Survey collected and conducted the behaviors and attitudes on major political issues such as how people think about their own country. The CES is a large-scale survey that helps the understanding of electoral democracy in Canada. It becomes a tradition from 1965. The online survey is one of the 2 data files for the 2019 CES.
+
+The `es2019_web_subset` is a subset of the 2019 CES online survey which has eight variables to help us to investigate the relationship between the patriotism and age of Canadians. 
+
+```{r download, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
+# Downloading data set  
+# from https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi%3A10.7910%2FDVN%2FDUS88V&version=&q=&fileTypeGroupFacet=%22Data%22&fileAccess=&fileTag=&fileSortField=&fileSortOrder=
+
+# load cesR package
+library(cesR)
+
+# call 2019 CES online survey
+get_ces("ces2019_web")
+
+# Have a overview of the dataset
+get_preview("ces2019_web", 10)
+
+# load cesR package and labelled package
+# library(labelled)
+
+# convert values to factor type
+# ces2019_web <- to_factor(ces2019_web)
+head(ces2019_web)
+
+#Select 8 variables from the original data set. 
+ces2019_web_subset <- ces2019_web%>%select(351,282,25:30)
+
+# Have a overview of the dataset variable.
+head(ces2019_web_subset)
+```
+
+Variables in the `ces2019_web_subset` dataset and their corresponding description are shown in the table below:
+
+```{r, echo=FALSE, include=FALSE}
+data_discription <- data.frame(vars = c("cps19_age","pes19_country_1","cps19_votechoice_pr_7_TEXT", "cps19_vote_unlikely","cps19_vote_unlikely_7_TEXT","cps19_vote_unlike_pr","cps19_vote_unlike_pr_7_TEXT","cps19_v_advance"),CES = c("Age in years based on
+cps19_yob","How do you feel about the following places - Canada", 
+
+"If you could vote in this election, which party do you think you would vote for?",
+"Which party do you think you will vote for",
+"Which party do you think you will vote for 2",
+"Which party do you think you will vote for 3",
+"Which party do you think you will vote for 4",
+"For which party did you vote? - Selected Choice"
+))
+colnames(data_discription) <- c("ces2019_web_subset survey variables", "CES variable")
+kable(data_discription, caption="Variables in the ces2019_web_subset and their description")
+```
+
+The following is a graph illustrating the type, missing value, and the number of observations of each variable. Many variables have missing value. However, our main variables of interests which are pes19_country_1 and cps19_age are not blank.
+
+```{r, echo=FALSE}
+library(dplyr)
+ces2019_web_subset %>% sample_frac(0.1) %>% vis_dat()
+```
+The following tables are detailed statistics on the type of each variable its missing value pattern in this dataset. They also provide some summary statistics on the dataset itself. For example, the number of rows, the number of columns, and so on.
+
+There are 37822 rows and 8 columns in the ces2019_web_subset dataset. For character variables, there are 3 of them. Likely, there are 3 factor variables and 2 numeric variables in the dataset.
+
+In detail, we see that the complete rate of pes19_country is the only % 0.133. By contrast, the complete rate of cps19_age is one hundred percent.
+
+```{r, echo=FALSE, warning=FALSE}
+skimr::skim(ces2019_web_subset)
+```
+
+```{r, echo=FALSE, include=FALSE}
+cps19_age <- as.numeric(ces2019_web$cps19_age)
+pes19_country_1 <- as.numeric(ces2019_web$pes19_country_1)
+```
+
+Here are the summary statistics for the variable pes19_country_1 which expresses how Canadians feel about their country.
+
+```{r, echo=FALSE, warning=FALSE}
+summary(ces2019_web_subset$pes19_country_1)
+min<-min(ces2019_web_subset$bhhb , na.rm = T)
+max<-max(ces2019_web_subset$pes19_country_1, na.rm = T)
+first<-quantile(ces2019_web_subset$pes19_country_1, .25, na.rm = T) 
+median<-median(ces2019_web_subset$pes19_country_1, na.rm = T)
+mean<-mean(ces2019_web_subset$pes19_country_1, na.rm = T)
+third<-quantile(ces2019_web_subset$pes19_country_1, .75, na.rm = T) 
+N<-sum(is.na(ces2019_web_subset$pes19_country_1))
+sum_data <- data.frame(Min = min,
+                       first = first,
+                       median = median,
+                       mean = mean,
+                       third = third,
+                       max = max,
+                       N = N)
+colnames(sum_data) <- c("Minimum", "1st Quartile", "Median","Mean","3rd Quartile","Maximun","NA's")
+kable(sum_data, caption="Summary Statistics of The Percentage of How Canadians Feel About Their Own Country")
+```
+
+The lowest(minimun) impression is 25%. The 1st quartile range and the 3rd quartile range of feeling are infinity and 100% respectively. The median feeling is 98%. The mean is 89.24866%. The greatest(maximum) impression is 100%. There are missing values are represented in this dataset.
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ces2019_web_subset %>% 
+  ggplot(aes(x = cps19_age)) +
+  geom_histogram(col="red", fill="yellow", alpha=0.5) + theme_classic() + 
+  labs(title="Histogram of cps19_age", 
+       subtitle = "of Canadians in Canadian Election Study - Online Survey", 
+       caption = "Data source: ces2019_web_subset dataset that is part of 2019 CES dataset")
+```
+The above histogram shows the overall distribution of age in Canadians who participate the online survey of Canadian Election Study. This histogram is slightly right skewed.
+
+```{r echo=FALSE}
+# Calculate the mean and median of how Canadian feel about their national country.
+mean_pes19_country_1 <- mean(ces2019_web_subset$pes19_country_1) 
+median_pes19_country_1 <- median(ces2019_web_subset$pes19_country_1) 
+
+# Calculate the mean and median of age.
+mean_age <- mean(ces2019_web_subset$cps19_age) 
+median_age <- median(ces2019_web_subset$cps19_age) 
+```
+The mean pes19_country_1 of ces2019_web_subset dataset is `r mean_pes19_country_1`.
+The median pes19_country_1 of ces2019_web_subset dataset is `r median_pes19_country_1 `.
+
+The mean cps19_age of ces2019_web_subset is `r mean_age`.
+The median cps19_age of ces2019_web_subset is `r median_age`.
+
+```{r echo=FALSE}
+# Calculate the standard deviation and interquantile range of values in pes19_country_1
+sd_country <- sd(ces2019_web_subset$pes19_country_1,na.rm = TRUE)
+IQR_country <- IQR(ces2019_web_subset$pes19_country_1,na.rm = TRUE)
+
+# Calculate the standard deviation and interquantile range of values in cps19_age
+sd_age <- sd(ces2019_web_subset$cps19_age)
+IQR_age <- IQR(ces2019_web_subset$cps19_age)
+```
+The standard deviation of the values in forearm length is `r sd_country`.
+The interquartile range of forearm length is `r IQR_country`.
+
+The standard deviation of the values in height is `r sd_age`.
+The interquartile range of height is `r IQR_age`.
+
+# Graph
+
+```{r, echo=FALSE}
+# Plot the scatter plot of the how Canadian feels about their national country and their age.
+plot(ces2019_web_subset$cps19_age, ces2019_web_subset$pes19_country_1, xlab="Age", ylab="Prefer Canada", main = "Scatter Plot of How Canadian Feels About Their National Country and Their Age")
+```
+This scatter plot shows that a slight linear relationship between the age and how Canadians feel about their country in the online survey. We can see as the age increases, the their impression of their country increases generally as well.
+
+From the histogram of the impression of national country by Canadian, we can see that the histogram is left-skewed. Also, the histogram is asymmetric which shows the variable does not follow the normal distribution.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ces2019_web_subset %>% 
+  ggplot(aes(x = pes19_country_1)) +
+  geom_histogram(col="blue", fill="purple", alpha=0.5) + theme_classic() + 
+  labs(title="Histogram of pes19_country_1", 
+       subtitle = "of Canadians in Canadian Election Study - Online Survey", 
+       caption = "Data source: ces2019_web_subset dataset that is part of 2019 CES dataset")
+```
+
+From the above histogram of how Canadians generally feel about their national country, we can see that the histogram is left-skewed. Also, the histogram is asymmetric which shows the variable does not follow the normal distribution.
+
+```{r echo=FALSE}
+# Plot the boxplot of height and forearm length
+# ggplot(ces2019_web_subset,aes(x=pes19_country_1))+
+#   geom_boxplot(outlier.color = "orange",outlier.size=1)+ theme_get()+
+#   labs(title = "Box plot of pes19_country_1 by cps19_age",
+#        caption =  "Data source: ces2019_web_subset dataset that is part of 2019 CES dataset")
+
+boxplot(ces2019_web_subset$cps19_age, ces2019_web_subset$pes19_country_1, names = c("age","Prefer Canada"), main = "Boxplot of pes19_country_1 and cps19_age")
+```
+
+The boxplot of pes19_country_1 and cps19_age illustrates that age is mainly concentrated around 50. Likewise, the feeling of the national country Canada is mostly around 90% which is pretty high. Also, the pes19_country_1 is left-skewed. Moreover, there are lots of one outliers in the variable of pes19_country_1.
+
+**statistical analysis**
+
+pes19_country_1 and cps19_age are both continuous which suggest there is a linear regression relation between them.
+```{r, echo=FALSE}
+model <- lm(ces2019_web_subset$pes19_country_1 ~ ces2019_web_subset$cps19_age, data=ces2019_web_subset)
+summary(model)
+```
+The  equation of this linear regression model between forearm length and height is $\hat{y_i}$=0.12052$x_i$+82.69676
+
+When testing whether $\beta_0$=0, we see that p-value is 0.78305 which is greater than 0.05, equivalently means that $\beta_0$ accepts the null hypothesis and is not statistically different from 0, 
+
+From the interpretation above, we see $\hat{\beta_0}$=-82.69676. This means that when the age of a Canadian is 0, the expected forearm feeling of his or her national country is great(82.69676). We can see Canadian are pretty patriotic.
+
+On the other hand, testing whether $\beta_1$=0 to determine is there a relationship between Canadian's age and the feeling of their national country, we see that the p-value is 0.01385 which is less than 0.05 which rejects the alternative hypothesis, equivalently means that there is a relation between Canadian's age and the feeling of their national country. $\hat{\beta_1}$=0.12052 shows when their age increases, the expected impression of their national country increase by a little(0.12052).
+
+# Graph discussion
+
+In the graph of the histogram, about pes19_country_1 is heavily left-skewed. We see that there is a slight increase pattern in the regression line between pes19_country_1 and cps19_age. From this graph, we can probably guess that the impression of the natural country among Canadians increases as their age increases. The graph shows the missing value pattern of the variables in the ces2019_web_subset illustrates that there are too many missing values in variable pes19_country_1. This graph suggests that our graph might not be trustworthy since the loss of information. Thus there might be other variables that could affect the pes19_country_1.
+
+# Discussion
+
+The discussion is how the impression of Canada by different range of age differ among Canadians. One of the main findings in the above graphs is that elders are more fond of their national countries than youngsters. Studies had shown that youngsters might be more lack of nationalional identities than elders. People are less patriotic when they are young and little. This relation is illustrated by the scattor plot. We can see a slight linear relationship between the age and how Canadians feel about their country in the online survey. As the age increases, the their impression of their country increases as well.
+
+The statistical analysis gives us an equation of the relation between how Canadians feel about their national country corresponding to their age is a linear regresison line.
+
+However, by the histogram of the pes19_country_1 which is left-skewed histogram shows that actually most of Canadians no matter how old are they, they give pretty high score on how they feel about Canada. 
+
+In the future of survey, we should pay attention on the problem of non-response. From the tables which show the type of each variable and its missing value pattern tell us that there are a lot of non-response in the variable of pes19_country_1. Also, by the boxplot of the pes19_country_1 shows us that there are a lot of outliers which indicate the people who don't response.
+
+Nonetheless, the large sample size we are able to conclude that elders in Canada are more fond of their national country than youngsters.
+
+## Weaknesses and next steps
+
+The weakness is that many observations of pes19_country_1 are empty. This loss of information might lead to biased results. There could be other variables such as lurking variables affect the completion of the online survey by CES. The topic about how people think about their national country might be more interested in by people who care about the politics. Thus to what extend people are interest of politics could be a lurking variable affects the variable pes19_country_1. Also variables like level of eduction could also affect how people feel about their national country in some way. Furthermore, the linear regression relation between pes19_country_1 and cps19_age might not be trust worthy.
+
+Next steps could be looking at lurking variables and how they associate the Canadian impression towards their own country. Finding more effective ways such as conducting propaganda of the online survey for imputing missing values so that reducing loss of information and bias. Also, we can look at whether there is a linear regression relation at pes19_country_1 can have other linear regression with more independent variables.
+
+# References

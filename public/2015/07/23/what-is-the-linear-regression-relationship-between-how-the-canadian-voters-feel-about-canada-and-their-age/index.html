@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.75.1" />
+
+
+<title>What is The Linear Regression Relationship Between How The Canadian Voters Feel About Canada and Their Age - STA304 Assignment</title>
+<meta property="og:title" content="What is The Linear Regression Relationship Between How The Canadian Voters Feel About Canada and Their Age - STA304 Assignment">
+
+
+  <link href='../../../../favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="../../../../css/fonts.css" media="all">
+<link rel="stylesheet" href="../../../../css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="../../../../" class="nav-logo">
+    <img src="../../../../images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">10 min read</span>
+    
+
+    <h1 class="article-title">What is The Linear Regression Relationship Between How The Canadian Voters Feel About Canada and Their Age</h1>
+
+    
+    <span class="article-date">2015-07-23</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>We use <span class="citation">(R Core Team 2020)</span> and <code>R</code> package <span class="citation">(Wickham et al. 2019)</span> to do the analysis.</p>
+<p>Code and data supporting this analysis is available at: “<a href="https://github.com/Lily-WangQian/STA304_PS1.git" class="uri">https://github.com/Lily-WangQian/STA304_PS1.git</a>”.</p>
+<div id="abstract" class="section level1">
+<h1>Abstract:</h1>
+<p>“We investigated the data set of the Canadian Election Study online survey in 2019. The results showed us that Canadians who are older have a better impression of the native country, Canada. This is because older people tend to be more mature and know the meaning of their identity is important. These results are significant since the younger generation tends to lack of patriotism.”</p>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The young generation is far less patriotic and less likely to think of themselves as Canadians compare to their parents<span class="citation">(Carlson 2012)</span>. A new national survey investigates the Canadian attitudes towards patriotism. The result is that there is a significant difference between youngsters and elders who are more patriotic. The Association for Canadian Studies commission a pull and showed that there is a 30 percentage point gap between the youngsters and 90% of the Canadian elders who think themselves are patriotic<span class="citation">(Carp 2009)</span>。</p>
+<p>In our study, we analyzed a subset of the online survey version of the 2019 CES dataset which is part of the 2019 Canadian Elections Survey. We looked at core variables age and gender the percentage of how Canadian feel about their country. We discovered that Canadian who are elders tend to be more patriotic than youngsters. There could be a lack of identity. This could be that there is a lack of national identification in Canada.</p>
+<p>We examined age and the feeling of the national country among the Canadians in this online CES survey and found out that elders are more fond of their national identity, on the other hand, the youngsters are less patriotic. However, we did not consider other factors that might bring impact this finding, There are only a few people who fill the blanks of how they feel about their national country. The distribution of the impression of a national country is extremely left-skewed. Some factors like the internet speed and how the online CES survey propagates could potentially affect the model results. Since this is a survey about politics, the people who take the survey and be more interested in this survey could be elders. Future work would be the focus on what extend people care about politics and how they affect the relationship between patriotism and age.</p>
+</div>
+<div id="data-discussion" class="section level1">
+<h1>Data discussion</h1>
+<p>The 2019 Canadian Election Study - Online Survey collected and conducted the behaviors and attitudes on major political issues such as how people think about their own country. The CES is a large-scale survey that helps the understanding of electoral democracy in Canada. It becomes a tradition from 1965. The online survey is one of the 2 data files for the 2019 CES.</p>
+<p>The <code>es2019_web_subset</code> is a subset of the 2019 CES online survey which has eight variables to help us to investigate the relationship between the patriotism and age of Canadians.</p>
+<p>Variables in the <code>ces2019_web_subset</code> dataset and their corresponding description are shown in the table below:</p>
+<p>The following is a graph illustrating the type, missing value, and the number of observations of each variable. Many variables have missing value. However, our main variables of interests which are pes19_country_1 and cps19_age are not blank.</p>
+<p><img src="../../../../post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+The following tables are detailed statistics on the type of each variable its missing value pattern in this dataset. They also provide some summary statistics on the dataset itself. For example, the number of rows, the number of columns, and so on.</p>
+<p>There are 37822 rows and 8 columns in the ces2019_web_subset dataset. For character variables, there are 3 of them. Likely, there are 3 factor variables and 2 numeric variables in the dataset.</p>
+<p>In detail, we see that the complete rate of pes19_country is the only % 0.133. By contrast, the complete rate of cps19_age is one hundred percent.</p>
+<table>
+<caption><span id="tab:unnamed-chunk-3">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">ces2019_web_subset</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">37822</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">6</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cps19_votechoice_pr_7_TEXT</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0</td>
+<td align="right">17</td>
+<td align="right">37819</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">cps19_vote_unlikely</td>
+<td align="right">36519</td>
+<td align="right">0.03</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">8</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">cps19_vote_unlikely_7_TEXT</td>
+<td align="right">37822</td>
+<td align="right">0.00</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">cps19_vote_unlike_pr</td>
+<td align="right">37714</td>
+<td align="right">0.00</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">7</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">cps19_vote_unlike_pr_7_TEXT</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">37822</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">cps19_v_advance</td>
+<td align="right">35493</td>
+<td align="right">0.06</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">8</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">pes19_country_1</td>
+<td align="right">32787</td>
+<td align="right">0.13</td>
+<td align="right">89.25</td>
+<td align="right">15.33</td>
+<td align="right">0</td>
+<td align="right">82</td>
+<td align="right">95</td>
+<td align="right">100</td>
+<td align="right">100</td>
+<td align="left">▁▁▁▂▇</td>
+</tr>
+<tr class="even">
+<td align="left">cps19_age</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">48.69</td>
+<td align="right">16.61</td>
+<td align="right">18</td>
+<td align="right">35</td>
+<td align="right">49</td>
+<td align="right">62</td>
+<td align="right">99</td>
+<td align="left">▆▇▇▃▁</td>
+</tr>
+</tbody>
+</table>
+<p>Here are the summary statistics for the variable pes19_country_1 which expresses how Canadians feel about their country.</p>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
+##    0.00   82.00   95.00   89.25  100.00  100.00   32787</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-5">Table 2: </span>Summary Statistics of The Percentage of How Canadians Feel About Their Own Country</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Minimum</th>
+<th align="right">1st Quartile</th>
+<th align="right">Median</th>
+<th align="right">Mean</th>
+<th align="right">3rd Quartile</th>
+<th align="right">Maximun</th>
+<th align="right">NA’s</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">25%</td>
+<td align="right">Inf</td>
+<td align="right">82</td>
+<td align="right">95</td>
+<td align="right">89.24866</td>
+<td align="right">100</td>
+<td align="right">100</td>
+<td align="right">32787</td>
+</tr>
+</tbody>
+</table>
+<p>The lowest(minimun) impression is 25%. The 1st quartile range and the 3rd quartile range of feeling are infinity and 100% respectively. The median feeling is 98%. The mean is 89.24866%. The greatest(maximum) impression is 100%. There are missing values are represented in this dataset.</p>
+<p><img src="../../../../post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+The above histogram shows the overall distribution of age in Canadians who participate the online survey of Canadian Election Study. This histogram is slightly right skewed.</p>
+<p>The mean pes19_country_1 of ces2019_web_subset dataset is NA.
+The median pes19_country_1 of ces2019_web_subset dataset is NA.</p>
+<p>The mean cps19_age of ces2019_web_subset is 48.6912908.
+The median cps19_age of ces2019_web_subset is 49.</p>
+<p>The standard deviation of the values in forearm length is 15.3318003.
+The interquartile range of forearm length is 18.</p>
+<p>The standard deviation of the values in height is 16.6117067.
+The interquartile range of height is 27.</p>
+</div>
+<div id="graph" class="section level1">
+<h1>Graph</h1>
+<p><img src="../../../../post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-9-1.png" width="672" />
+This scatter plot shows that a slight linear relationship between the age and how Canadians feel about their country in the online survey. We can see as the age increases, the their impression of their country increases generally as well.</p>
+<p>From the histogram of the impression of national country by Canadian, we can see that the histogram is left-skewed. Also, the histogram is asymmetric which shows the variable does not follow the normal distribution.</p>
+<p><img src="../../../../post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>From the above histogram of how Canadians generally feel about their national country, we can see that the histogram is left-skewed. Also, the histogram is asymmetric which shows the variable does not follow the normal distribution.</p>
+<p><img src="../../../../post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>The boxplot of pes19_country_1 and cps19_age illustrates that age is mainly concentrated around 50. Likewise, the feeling of the national country Canada is mostly around 90% which is pretty high. Also, the pes19_country_1 is left-skewed. Moreover, there are lots of one outliers in the variable of pes19_country_1.</p>
+<p><strong>statistical analysis</strong></p>
+<p>pes19_country_1 and cps19_age are both continuous which suggest there is a linear regression relation between them.</p>
+<pre><code>## 
+## Call:
+## lm(formula = ces2019_web_subset$pes19_country_1 ~ ces2019_web_subset$cps19_age, 
+##     data = ces2019_web_subset)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -89.687  -6.198   6.241   9.951  15.013 
+## 
+## Coefficients:
+##                              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                  82.69676    0.78305   105.6   &lt;2e-16 ***
+## ces2019_web_subset$cps19_age  0.12052    0.01385     8.7   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 15.22 on 5033 degrees of freedom
+##   (32787 observations deleted due to missingness)
+## Multiple R-squared:  0.01482,    Adjusted R-squared:  0.01462 
+## F-statistic: 75.69 on 1 and 5033 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The equation of this linear regression model between forearm length and height is <span class="math inline">\(\hat{y_i}\)</span>=0.12052<span class="math inline">\(x_i\)</span>+82.69676</p>
+<p>When testing whether <span class="math inline">\(\beta_0\)</span>=0, we see that p-value is 0.78305 which is greater than 0.05, equivalently means that <span class="math inline">\(\beta_0\)</span> accepts the null hypothesis and is not statistically different from 0,</p>
+<p>From the interpretation above, we see <span class="math inline">\(\hat{\beta_0}\)</span>=-82.69676. This means that when the age of a Canadian is 0, the expected forearm feeling of his or her national country is great(82.69676). We can see Canadian are pretty patriotic.</p>
+<p>On the other hand, testing whether <span class="math inline">\(\beta_1\)</span>=0 to determine is there a relationship between Canadian’s age and the feeling of their national country, we see that the p-value is 0.01385 which is less than 0.05 which rejects the alternative hypothesis, equivalently means that there is a relation between Canadian’s age and the feeling of their national country. <span class="math inline">\(\hat{\beta_1}\)</span>=0.12052 shows when their age increases, the expected impression of their national country increase by a little(0.12052).</p>
+</div>
+<div id="graph-discussion" class="section level1">
+<h1>Graph discussion</h1>
+<p>In the graph of the histogram, about pes19_country_1 is heavily left-skewed. We see that there is a slight increase pattern in the regression line between pes19_country_1 and cps19_age. From this graph, we can probably guess that the impression of the natural country among Canadians increases as their age increases. The graph shows the missing value pattern of the variables in the ces2019_web_subset illustrates that there are too many missing values in variable pes19_country_1. This graph suggests that our graph might not be trustworthy since the loss of information. Thus there might be other variables that could affect the pes19_country_1.</p>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
+<p>The discussion is how the impression of Canada by different range of age differ among Canadians. One of the main findings in the above graphs is that elders are more fond of their national countries than youngsters. Studies had shown that youngsters might be more lack of nationalional identities than elders. People are less patriotic when they are young and little. This relation is illustrated by the scattor plot. We can see a slight linear relationship between the age and how Canadians feel about their country in the online survey. As the age increases, the their impression of their country increases as well.</p>
+<p>The statistical analysis gives us an equation of the relation between how Canadians feel about their national country corresponding to their age is a linear regresison line.</p>
+<p>However, by the histogram of the pes19_country_1 which is left-skewed histogram shows that actually most of Canadians no matter how old are they, they give pretty high score on how they feel about Canada.</p>
+<p>In the future of survey, we should pay attention on the problem of non-response. From the tables which show the type of each variable and its missing value pattern tell us that there are a lot of non-response in the variable of pes19_country_1. Also, by the boxplot of the pes19_country_1 shows us that there are a lot of outliers which indicate the people who don’t response.</p>
+<p>Nonetheless, the large sample size we are able to conclude that elders in Canada are more fond of their national country than youngsters.</p>
+<div id="weaknesses-and-next-steps" class="section level2">
+<h2>Weaknesses and next steps</h2>
+<p>The weakness is that many observations of pes19_country_1 are empty. This loss of information might lead to biased results. There could be other variables such as lurking variables affect the completion of the online survey by CES. The topic about how people think about their national country might be more interested in by people who care about the politics. Thus to what extend people are interest of politics could be a lurking variable affects the variable pes19_country_1. Also variables like level of eduction could also affect how people feel about their national country in some way. Furthermore, the linear regression relation between pes19_country_1 and cps19_age might not be trust worthy.</p>
+<p>Next steps could be looking at lurking variables and how they associate the Canadian impression towards their own country. Finding more effective ways such as conducting propaganda of the online survey for imputing missing values so that reducing loss of information and bias. Also, we can look at whether there is a linear regression relation at pes19_country_1 can have other linear regression with more independent variables.</p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-carlson_2012">
+<p>Carlson, Kathryn Blaze. 2012. “Canada Day Poll: 15 Things You Should Know About Canadian Identity.” <em>National Post</em>. National Post. <a href="https://nationalpost.com/news/canada/canada-day-poll-15-things-you-should-know-about-canadian-identity">https://nationalpost.com/news/canada/canada-day-poll-15-things-you-should-know-about-canadian-identity</a>.</p>
+</div>
+<div id="ref-carp_2009">
+<p>Carp. 2009. “Senior Citizens More Patriotic Than Young Canadians: Poll.” <em>CARP</em>. <a href="https://www.carp.ca/2009/12/21/senior-citizens-more-patriotic-than-young-Canadians-poll/">https://www.carp.ca/2009/12/21/senior-citizens-more-patriotic-than-young-Canadians-poll/</a>.</p>
+</div>
+<div id="ref-citeR">
+<p>R Core Team. 2020. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. <a href="https://www.R-project.org/">https://www.R-project.org/</a>.</p>
+</div>
+<div id="ref-citetidyverse">
+<p>Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy D’Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019. “Welcome to the tidyverse.” <em>Journal of Open Source Software</em> 4 (43): 1686. <a href="https://doi.org/10.21105/joss.01686">https://doi.org/10.21105/joss.01686</a>.</p>
+</div>
+</div>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="../../../../index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="../../../../images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="../../../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
