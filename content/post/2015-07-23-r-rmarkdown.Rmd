@@ -7,7 +7,7 @@ bibliography: "references.bib"
 tags: ["R Markdown", "plot", "regression"]
 ---
 
-We use [@citeR] and `R` package [@citetidyverse] to do the analysis.
+We use `R`[@citeR],  and `R` package [@citetidyverse], `R` package [@citedplyr],  `R` package [@citeskimr], `R` package [@citedevtools], `R` package [@citevisdat] to do the analysis.
 
 Code and data supporting this analysis is available at: "https://github.com/Lily-WangQian/STA304_PS1.git".
 
